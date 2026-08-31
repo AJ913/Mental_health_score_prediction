@@ -196,44 +196,61 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  async function postPrediction(payload) {
-    const response = await fetch(API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+  async function handleSubmit(event) {
+  event.preventDefault();
 
-    if (!response.ok) {
-      let detail = `Prediction request failed with status ${response.status}.`;
-
-      try {
-        const errorBody = await response.json();
-        if (errorBody.detail) {
-          detail = Array.isArray(errorBody.detail)
-            ? errorBody.detail.map((item) => item.msg).join(" ")
-            : String(errorBody.detail);
-        }
-      } catch {
-        detail = response.statusText || detail;
-      }
-
-      throw new Error(detail);
-    }
-
-    return response.json();
+  if (!form.reportValidity()) {
+    return;
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  // Check total daily hours
+  const screenTime = Number.parseFloat(
+    form.elements.Avg_Daily_Usage_Hours.value
+  );
 
-    if (!form.reportValidity()) {
-      return;
-    }
+  const studyHours = Number.parseFloat(
+    form.elements.Study_Hours.value
+  );
 
-    setBusy(true);
-    startLoadingMeter();
+  const physicalActivity = Number.parseFloat(
+    form.elements.Physical_Activity_Hours.value
+  );
+
+  const sleepHours = Number.parseFloat(
+    form.elements.Sleep_Hours_Per_Night.value
+  );
+
+  const totalHours =
+    screenTime +
+    studyHours +
+    physicalActivity +
+    sleepHours;
+
+  if (totalHours > 24) {
+    meterWrap.dataset.mode = "error";
+    setMeter(100, "#dc5c55");
+    scoreValue.textContent = "!";
+
+    resultState.textContent = "Invalid Schedule";
+
+    resultTitle.textContent =
+      "Daily hours exceed 24";
+
+    resultMessage.textContent =
+      `Your total is ${totalHours.toFixed(1)} hours. ` +
+      `Screen time + study + physical activity + sleep ` +
+      `cannot exceed 24 hours.`;
+
+    retryButton.hidden = true;
+
+    return;
+  }
+
+  setBusy(true);
+  startLoadingMeter();
+
+  
+  
 
     try {
       const payload = readPayload();
