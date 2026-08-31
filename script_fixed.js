@@ -1,4 +1,4 @@
-const API_ENDPOINT = "http://127.0.0.1:8000/predict";
+const API_ENDPOINT = "https://mental-health-score-prediction-5-opxi.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("predictorForm");
