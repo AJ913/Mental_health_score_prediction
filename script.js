@@ -1,4 +1,4 @@
-const API_ENDPOINT =  'https://mental-health-score-prediction-5-opxi.onrender.com/predict'
+const API_ENDPOINT =  'https://mental-health-score-prediction-5-opxi.onrender.com'
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("predictorForm");
