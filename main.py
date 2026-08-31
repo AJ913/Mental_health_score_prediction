@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
 from fastapi import FastAPI
-from pydantic import BaseModel , Field
+from pydantic import BaseModel , Field, model_validator
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Literal
 
@@ -36,6 +36,30 @@ class StudentData(BaseModel):
         Physical_Activity_Hours:float = Field(...,ge=0,le=24)
         Sleep_Hours_Per_Night:float = Field(...,ge=0,le=24)
         Stress_Level:Literal ['Medium', 'Low', 'Very High', 'High']
+
+
+@model_validator(mode="after")
+
+def validate_daily_hours(self):
+
+        total_hours = (
+            self.Avg_Daily_Usage_Hours
+            + self.Study_Hours
+            + self.Physical_Activity_Hours
+            + self.Sleep_Hours_Per_Night
+        )
+
+        if total_hours > 24:
+            raise ValueError(
+                f"Daily hours cannot exceed 24. "
+                f"Screen time + Study + Physical Activity + Sleep "
+                f"equals {total_hours:.1f} hours."
+            )
+
+        return self
+
+
+
 
     
 
