@@ -196,6 +196,38 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  async function postPrediction(payload) {
+  const response = await fetch(API_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    let detail = `Prediction request failed with status ${response.status}.`;
+
+    try {
+      const errorBody = await response.json();
+
+      if (errorBody.detail) {
+        detail = Array.isArray(errorBody.detail)
+          ? errorBody.detail.map((item) => item.msg).join(" ")
+          : String(errorBody.detail);
+      }
+    } catch {
+      detail = response.statusText || detail;
+    }
+
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+
+
   async function handleSubmit(event) {
   event.preventDefault();
 
