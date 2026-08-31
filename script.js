@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resultState.textContent = "Error";
       resultTitle.textContent = "Prediction failed";
       resultMessage.textContent =
-        error.message || "Check that your FastAPI backend is running on http://127.0.0.1:8000.";
+        error.message || "Unable to connect to the deployed FastAPI backend. Please try again.";
       retryButton.hidden = false;
       apiStatus.classList.add("is-offline");
       apiStatus.classList.remove("is-online");
@@ -291,18 +291,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function pingApi() {
-    fetch("http://127.0.0.1:8000/", { cache: "no-store" })
-      .then((response) => {
-        if (!response.ok) throw new Error("Offline");
-        apiStatus.classList.add("is-online");
-        apiStatus.classList.remove("is-offline");
-      })
-      .catch(() => {
-        apiStatus.classList.add("is-offline");
-        apiStatus.classList.remove("is-online");
-      });
-  }
+ function pingApi() {
+  fetch("https://mental-health-score-prediction-5-opxi.onrender.com/", {
+    cache: "no-store"
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error("Offline");
+
+      apiStatus.classList.add("is-online");
+      apiStatus.classList.remove("is-offline");
+    })
+    .catch(() => {
+      apiStatus.classList.add("is-offline");
+      apiStatus.classList.remove("is-online");
+    });
+}
 
   editableFields.forEach((element) => {
     const eventName = element.tagName === "SELECT" || element.type === "radio" ? "change" : "input";
